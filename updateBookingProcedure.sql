@@ -1,7 +1,10 @@
 DELIMITER //
-CREATE PROCEDURE CancelBooking(IN bookingID INT ) 
+CREATE PROCEDURE CancelBooking(IN bookingID INT  , IN bookingDate DATE ) 
 	BEGIN 
-			DELETE FROM orders WHERE bookingID = bookingID ;
+		UPDATE booking
+		SET bookingID = bookingID,
+        bookingDate = bookingDate
 	END //
 DELIMITER;
-CALL CancelBooking(9);
+
+CALL CancelBooking(9و"2022-10-11");
