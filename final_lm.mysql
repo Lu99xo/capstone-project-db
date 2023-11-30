@@ -1,0 +1,184 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema last_little_lemon
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema last_little_lemon
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `last_little_lemon` DEFAULT CHARACTER SET utf8 ;
+USE `last_little_lemon` ;
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`Address`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`Address` (
+  `addressID` INT NOT NULL,
+  `city` VARCHAR(45) NOT NULL,
+  `street` VARCHAR(45) NOT NULL,
+  `postcode` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`addressID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`customer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`customer` (
+  `customerID` INT NOT NULL,
+  `fullName` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `phoneNumber` INT NOT NULL,
+  `addressID` INT NOT NULL,
+  PRIMARY KEY (`customerID`),
+  INDEX `addressID_idx` (`addressID` ASC) VISIBLE,
+  CONSTRAINT `addressID`
+    FOREIGN KEY (`addressID`)
+    REFERENCES `last_little_lemon`.`Address` (`addressID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`staff`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`staff` (
+  `staffID` INT NOT NULL,
+  `name` VARCHAR(45) NULL,
+  `role` VARCHAR(45) NULL,
+  `salary` INT NULL,
+  PRIMARY KEY (`staffID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`menuItems`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`menuItems` (
+  `menuItemID` INT NOT NULL,
+  `starter` VARCHAR(45) NULL,
+  `course` VARCHAR(45) NULL,
+  `desert` VARCHAR(45) NULL,
+  PRIMARY KEY (`menuItemID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`Menues`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`Menues` (
+  `MenuID` INT NOT NULL,
+  `menuName` VARCHAR(45) NOT NULL,
+  `cuisine` VARCHAR(55) NOT NULL,
+  `menuItemID` INT NOT NULL,
+  PRIMARY KEY (`MenuID`),
+  INDEX `menuItemsID_idx` (`menuItemID` ASC) VISIBLE,
+  CONSTRAINT `menuItemsID`
+    FOREIGN KEY (`menuItemID`)
+    REFERENCES `last_little_lemon`.`menuItems` (`menuItemID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`Order`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`Order` (
+  `orderID` INT NOT NULL,
+  `orderDate` DATE NULL,
+  `totalCost` FLOAT NULL,
+  `customerID` INT NOT NULL,
+  `menuID` INT NULL,
+  PRIMARY KEY (`orderID`),
+  INDEX `customerID_idx` (`customerID` ASC) VISIBLE,
+  INDEX `menuID_idx` (`menuID` ASC) VISIBLE,
+  CONSTRAINT `customerID`
+    FOREIGN KEY (`customerID`)
+    REFERENCES `last_little_lemon`.`customer` (`customerID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `menuID`
+    FOREIGN KEY (`menuID`)
+    REFERENCES `last_little_lemon`.`Menues` (`MenuID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`table`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`table` (
+  `tableID` INT NOT NULL,
+  `capacity` INT NOT NULL,
+  `tableNo` INT NOT NULL,
+  PRIMARY KEY (`tableID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`Booking`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`Booking` (
+  `bookingID` INT NOT NULL,
+  `date` DATE NULL,
+  `tableID` INT NOT NULL,
+  `staffID` INT NOT NULL,
+  `customerID` INT NULL,
+  PRIMARY KEY (`bookingID`),
+  UNIQUE INDEX `staffID_UNIQUE` (`staffID` ASC) VISIBLE,
+  INDEX `tableID_idx` (`tableID` ASC) VISIBLE,
+  INDEX `customerID_idx` (`customerID` ASC) VISIBLE,
+  CONSTRAINT `staffID`
+    FOREIGN KEY (`staffID`)
+    REFERENCES `last_little_lemon`.`staff` (`staffID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `tableID`
+    FOREIGN KEY (`tableID`)
+    REFERENCES `last_little_lemon`.`table` (`tableID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `customerID`
+    FOREIGN KEY (`customerID`)
+    REFERENCES `last_little_lemon`.`customer` (`customerID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `last_little_lemon`.`order Delivery`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `last_little_lemon`.`order Delivery` (
+  `orderDeliveryID` INT NOT NULL,
+  `DeliveryDate` DATE NOT NULL,
+  `DeliveryState` VARCHAR(55) NOT NULL,
+  `addressID_de` INT UNSIGNED NOT NULL,
+  `orderID_de` INT NOT NULL,
+  PRIMARY KEY (`orderDeliveryID`),
+  INDEX `addressID_idx` (`addressID_de` ASC) VISIBLE,
+  INDEX `orderID_fk_idx` (`orderID_de` ASC) VISIBLE,
+  CONSTRAINT `addressID`
+    FOREIGN KEY (`addressID_de`)
+    REFERENCES `last_little_lemon`.`Address` (`addressID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `orderID_de`
+    FOREIGN KEY (`orderID_de`)
+    REFERENCES `last_little_lemon`.`Order` (`orderID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
