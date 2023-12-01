@@ -9,3 +9,5 @@ JOIN menues  ON  orders.orderID  = menues.MenuID
 JOIN menuitems  ON menues.MenuID = menuitems.menuItemID 
 
 WHERE orders.totalCost > 150;
+
+-- gg
